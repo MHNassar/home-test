@@ -1,0 +1,38 @@
+version: '2.1'
+services:
+
+  db:
+    image: mysql:5.7
+    container_name: db_container
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_DATABASE=UrlTest
+      - MYSQL_USER=nassar
+      - MYSQL_PASSWORD=1234
+    volumes:
+      - ./mysql/data:/var/lib/mysql:rw
+    ports:
+      - 3306:3306
+
+  core-app:
+    build:
+      context: ./.docker/php
+    container_name: core-app
+    working_dir: /var/app
+    volumes:
+      - ./app:/var/app
+      - ${HOME}/.ssh:/root/.ssh:ro
+    depends_on:
+      - db
+
+  core-server:
+    container_name: core-server
+    image: 'nginx:1.19'
+    volumes:
+      - './app:/var/app:ro'
+      - './.docker/nginx/conf.d:/etc/nginx/conf.d:ro'
+    ports:
+      - 85:80
+    depends_on:
+      - core-app
