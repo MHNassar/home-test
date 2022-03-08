@@ -8,19 +8,22 @@ use Semrush\HomeTest\Network\UrlIdGenerator;
 
 final class CustomUrlIdGeneratorTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function instantiation_works() : void
-    {
-        $generator = new CustomUrlIdGenerator();
+    private CustomUrlIdGenerator $customUrlIdGenerator;
 
-        self::assertInstanceOf(CustomUrlIdGenerator::class, $generator);
-        self::assertInstanceOf(UrlIdGenerator::class, $generator);
+    protected function setUp(): void
+    {
+        $this->customUrlIdGenerator = new CustomUrlIdGenerator();
+    }
+
+    public function testInstantiationWorks() : void
+    {
+        self::assertInstanceOf(CustomUrlIdGenerator::class, $this->customUrlIdGenerator);
+        self::assertInstanceOf(UrlIdGenerator::class, $this->customUrlIdGenerator);
     }
 
     /**
-     * @return mixed[]
+     * @return array []
+     * @dataProvider
      */
     public function provideGeneratorExpectations() : array
     {
@@ -40,12 +43,11 @@ final class CustomUrlIdGeneratorTest extends TestCase
     }
 
     /**
-     * @test
      * @dataProvider provideGeneratorExpectations
      */
-    public function generate_withValidUrl_returnsUrlId(string $url, string $expectedId) : void
+    public function testGenerateUrl(string $url, string $expectedId) : void
     {
-        $generatedId = (new CustomUrlIdGenerator())->generate($url);
+        $generatedId = $this->customUrlIdGenerator->generate($url);
 
         self::assertSame(
             $expectedId,
