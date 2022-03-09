@@ -41,3 +41,4 @@ To run the tests
 ```bash
 docker exec -it core-app sh -c "./vendor/bin/phpunit" -d
 ```
+
