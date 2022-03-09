@@ -4,15 +4,16 @@ namespace Semrush\HomeTest\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use \Doctrine\DBAL\Schema\Schema;
 
 class DBConnection
 {
     private static ?Connection $connection = null;
 
     private static array $connectionParams = [
-        'dbname' => 'UrlTest',
+        'dbname' => 'urldb',
         'user' => 'root',
-        'password' => '123',
+        'password' => 'root',
         'host' => 'db',
         'driver' => 'pdo_mysql',
     ];

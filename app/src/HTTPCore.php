@@ -9,41 +9,37 @@ use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
 
-class HTTPCore implements HttpKernelInterface
+
+class HTTPCore
 {
-    protected RouteCollection $routes;
+    private UrlMatcher $matcher;
+    private ControllerResolver $controllerResolver;
+    private ArgumentResolver $argumentResolver;
 
-    public function __construct()
+    public function __construct(UrlMatcher $matcher, ControllerResolver $controllerResolver, ArgumentResolver $argumentResolver)
     {
-        $this->routes = new RouteCollection();
+        $this->matcher = $matcher;
+        $this->controllerResolver = $controllerResolver;
+        $this->argumentResolver = $argumentResolver;
     }
 
-    public function handle(Request $request, int $type = self::MAIN_REQUEST, bool $catch = true): Response
+    public function handle(Request $request)
     {
-        $controllerResolver = new ControllerResolver();
-        $argumentResolver = new ArgumentResolver();
-        $context = new RequestContext();
-        $context->fromRequest($request);
+        $this->matcher->getContext()->fromRequest($request);
 
-        $matcher = new UrlMatcher($this->routes, $context);
         try {
-            $controller = $controllerResolver->getController($request);
-            $arguments = $argumentResolver->getArguments($request, $controller);
-            $response = call_user_func_array($controller, $arguments);
-        } catch (ResourceNotFoundException $e) {
-            $response = new Response('Not found!', Response::HTTP_NOT_FOUND);
+            $request->attributes->add($this->matcher->match($request->getPathInfo()));
+
+            $controller = $this->controllerResolver->getController($request);
+            $arguments = $this->argumentResolver->getArguments($request, $controller);
+
+            return call_user_func_array($controller, $arguments);
+        } catch (ResourceNotFoundException $exception) {
+            return new Response('Not Found', 404);
+        } catch (\Exception $exception) {
+            return new Response('An error occurred', 500);
         }
-        return $response;
     }
 
-    public function addRoute(string $name, string $path,string $controller)
-    {
-        $this->routes->add($name, new Route($path, [
-            '_controller' => $controller,
-        ]));
-    }
 }

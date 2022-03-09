@@ -1,24 +1,31 @@
 <?php
 
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Semrush\HomeTest\HTTPCore;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
 require dirname(__DIR__).'/vendor/autoload.php';
 
-use Semrush\HomeTest\HTTPCore;
-use Semrush\HomeTest\Controller\DefaultController;
+$routesItems = include __DIR__.'/routes.php';
+$routes = new RouteCollection();
+foreach ($routesItems as $route)
+{
+    $controllerName = sprintf('Semrush\HomeTest\Controller\%s', $route['controller']);
+    $routes->add($route['name'], new Route($route['path'], [
+        '_controller' => $controllerName,
+        ]));
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-// Our framework is now handling itself the request
-$app = new HTTPCore();
-
-
-$app->addRoute('index','/hello/{name}','DefaultController::index');
-//$app->map('/', $def->index());
-//
-//$app->map('/about', function () {
-//    return new Response('This is the about page');
-//});
-//
-//$app->map('/hello/{name}', function ($name) {
-//    return new Response('Hello '.$name);
-//});
+}
+$request = Request::createFromGlobals();
+$context = new RequestContext();
+$matcher = new UrlMatcher($routes, $context);
+$controllerResolver = new ControllerResolver();
+$argumentResolver = new ArgumentResolver();
+$app = new HTTPCore($matcher, $controllerResolver, $argumentResolver);
+$response = $app->handle($request);
+$response->send();

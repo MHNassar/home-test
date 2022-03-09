@@ -5,15 +5,23 @@ services:
     image: mysql:5.7
     container_name: db_container
     restart: always
+    command: --default-authentication-plugin=mysql_native_password
     environment:
-      - MYSQL_ROOT_PASSWORD=123
-      - MYSQL_DATABASE=UrlTest
-      - MYSQL_USER=nassar
-      - MYSQL_PASSWORD=1234
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: urldb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
     volumes:
       - ./mysql/data:/var/lib/mysql:rw
+      - ./init:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_container
+    links:
+      - db:db
     ports:
-      - 3306:3306
+      - 8088:80
 
   core-app:
     build:
@@ -33,6 +41,6 @@ services:
       - './app:/var/app:ro'
       - './.docker/nginx/conf.d:/etc/nginx/conf.d:ro'
     ports:
-      - 85:80
+      - 8060:80
     depends_on:
       - core-app
