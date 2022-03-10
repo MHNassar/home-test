@@ -12,20 +12,21 @@ class UrlGeneratorController
     private UrlGeneratorService $service;
     public function __construct()
     {
-        $this->service = new UrlGeneratorService();
+        $this->service = new UrlGeneratorService() ;
     }
 
-    public function index(Request $request)
+    public function index(): Response
     {
        return new JsonResponse([
            'message' => 'HTTP API to fetch urls'
        ]);
     }
 
-    public function creatUrl(Request $request)
+
+    public function createUrl(Request $request): Response
     {
         $requestBody = $request->toArray();
-        $url = isset($requestBody['url'])?? null;
+        $url = $requestBody['url'] ?? null;
         if (!empty($url))
         {
             $status = $this->service->saveUrl($url);
@@ -42,15 +43,19 @@ class UrlGeneratorController
         ],Response::HTTP_BAD_REQUEST);
     }
 
-    public function getUrls()
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function getUrls() :Response
     {
         $urls = $this->service->getAll();
         return new JsonResponse($urls,Response::HTTP_OK);
     }
 
-    public function getUrl($id)
+    public function getUrl($id) : Response
     {
         $url = $this->service->getOne($id);
+
         $status = Response::HTTP_OK;
         if (count($url) == 0)
         {

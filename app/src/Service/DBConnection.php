@@ -4,7 +4,6 @@ namespace Semrush\HomeTest\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use \Doctrine\DBAL\Schema\Schema;
 
 class DBConnection
 {
@@ -18,7 +17,11 @@ class DBConnection
         'driver' => 'pdo_mysql',
     ];
 
-    public static function getConnection(){
+    /**
+     * @return Connection
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public static function getConnection(): Connection{
 
         if (is_null(self::$connection))
         {

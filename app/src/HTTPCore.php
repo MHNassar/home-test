@@ -2,44 +2,35 @@
 
 namespace Semrush\HomeTest;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\HttpKernel\EventListener\ResponseListener;
+use Symfony\Component\HttpKernel\EventListener\RouterListener;
+use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
 
 
-class HTTPCore
+class HTTPCore extends HttpKernel
 {
-    private UrlMatcher $matcher;
-    private ControllerResolver $controllerResolver;
-    private ArgumentResolver $argumentResolver;
-
-    public function __construct(UrlMatcher $matcher, ControllerResolver $controllerResolver, ArgumentResolver $argumentResolver)
-    {
-        $this->matcher = $matcher;
-        $this->controllerResolver = $controllerResolver;
-        $this->argumentResolver = $argumentResolver;
-    }
-
-    public function handle(Request $request)
-    {
-        $this->matcher->getContext()->fromRequest($request);
-
-        try {
-            $request->attributes->add($this->matcher->match($request->getPathInfo()));
-
-            $controller = $this->controllerResolver->getController($request);
-            $arguments = $this->argumentResolver->getArguments($request, $controller);
-
-            return call_user_func_array($controller, $arguments);
-        } catch (ResourceNotFoundException $exception) {
-            return new Response('Not Found', 404);
-        } catch (\Exception $exception) {
-            return new Response('An error occurred', 500);
-        }
-    }
+//    public function __construct($routes)
+//    {
+//        $requestStack = new RequestStack();
+//        $controllerResolver = new ControllerResolver();
+//        $argumentResolver = new ArgumentResolver();
+//        $dispatcher = new EventDispatcher();
+//
+//        $context = new RequestContext();
+//        $matcher = new UrlMatcher($routes, $context);
+//        $dispatcher->addSubscriber(new RouterListener($matcher, $requestStack));
+//        $dispatcher->addSubscriber(new ResponseCacheListener());
+//        parent::__construct($dispatcher, $controllerResolver, $requestStack, $argumentResolver);
+//    }
 
 }

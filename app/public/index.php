@@ -1,4 +1,9 @@
 <?php
+use Symfony\Component\HttpFoundation\Request;
 
-require dirname(__DIR__).'/config/bootstrap.php';
+$app = include dirname(__DIR__).'/config/bootstrap.php';
 
+$request = Request::createFromGlobals();
+
+$response = $app->handle($request);
+$response->send();
