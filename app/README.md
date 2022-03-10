@@ -32,9 +32,5 @@ SELECT CAST(CONV(SUBSTRING(SHA1("http://google.de/hh"), 1, 16), 16, 10) AS UNSIG
 - **[x]** **[D]** Provide and implement at least one (1) other implementation of the `UrlIdGenerator` interface able to generate the same IDs, also including tests
 - **[o]** **[D]** Provide a runnable environment of some kind (VM, Docker) in which the tests are still running successfully
 - **[o]** **[D]** Extend the environment to be able to run an integration test with your implementation against it and write that integration test
-- **[.]** Extend the environment further with a small HTTP service allowing consumers to look up the URL IDs for a list URLs they provide
-- **[.]** That service should probably not always re-calculate those IDs on the fly, so implement a caching layer of some fashion
-
-## What I did 
-- change phpunit version to 8 to use php-8
-- use 
+- **[.]** **[D]** Extend the environment further with a small HTTP service allowing consumers to look up the URL IDs for a list URLs they provide
+- **[.]** **[D]** That service should probably not always re-calculate those IDs on the fly, so implement a caching layer of some fashion
