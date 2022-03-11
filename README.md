@@ -5,6 +5,7 @@
 * [Technical Requirements](#technical-requirements)
 * [Setup](#setup)
 * [Test](#test)
+* [Completed Tasks](#completed-tasks)
 * [HTTP API](#http-api)
 
 ## Technologies 
@@ -40,6 +41,15 @@ To run the tests
 ```bash
 docker exec -it core-app sh -c "./vendor/bin/phpunit" -d
 ```
+## Completed Tasks  
+- **[#]**  Implement the missing code to make the tests run successfully
+- **[#]**  Provide and implement at least one (1) other implementation of the `UrlIdGenerator` interface able to generate the same IDs, also including tests
+- **[#]**  Provide a runnable environment of some kind (VM, Docker) in which the tests are still running successfully
+- **[#]**  Extend the environment to be able to run an integration test with your implementation against it and write that integration test
+- **[#]**  Extend the environment further with a small HTTP service allowing consumers to look up the URL IDs for a list URLs they provide
+- **[#]**  That service should probably not always re-calculate those IDs on the fly, so implement a caching layer of some fashion
+
+
 ## HTTP API
 Using Symfony component i creat a sample HTTP server framework to serve REST Api ( create , find , get All)
 ### Features implemented 
