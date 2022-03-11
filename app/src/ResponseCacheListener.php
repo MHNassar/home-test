@@ -14,7 +14,7 @@ class ResponseCacheListener implements EventSubscriberInterface
         $response = $event->getResponse();
         $requestMethod = $event->getRequest()->getMethod();
         // To cache Get requests for 1 Min
-        if ($requestMethod == 'GET')
+        if ($requestMethod == 'GET' && $response->isSuccessful())
         {
             $response->setTtl(60);
         }
